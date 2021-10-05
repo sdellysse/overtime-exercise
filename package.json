@@ -1,0 +1,36 @@
+{
+  "name": "overtime-exercise",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "npm run start:http",
+    "start:http": "ts-node starters/http.ts",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "7.15.5",
+    "@babel/preset-env": "7.15.6",
+    "@babel/preset-typescript": "7.15.0",
+    "@types/body-parser": "1.19.1",
+    "@types/express": "^4.17.13",
+    "@types/jest": "27.0.2",
+    "@types/node": "^16.7.1",
+    "babel-jest": "27.2.4",
+    "eslint": "^7.32.0",
+    "jest": "27.2.4",
+    "prettier": "2.4.1",
+    "ts-jest": "27.0.5",
+    "ts-node": "^10.2.1",
+    "typescript": "4.4.3"
+  },
+  "dependencies": {
+    "body-parser": "1.19.0",
+    "express": "^4.17.1",
+    "express-promise-router": "^4.1.0",
+    "runtypes": "^6.3.2"
+  }
+}
