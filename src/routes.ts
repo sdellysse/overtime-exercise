@@ -13,7 +13,7 @@ const routes = <const>{
   ): Promise<void> => {
     const users = await db.getUsers({ handle: store.handle });
 
-    res.json(users);
+    res.json(users.map(({ followingIds, ...restOfUser }) => restOfUser));
   },
 
   "GET /users/:id": async (
@@ -29,7 +29,30 @@ const routes = <const>{
       return;
     }
 
-    res.json(user);
+    const { followingIds, ...restOfUser } = user;
+    const followingUsers = (
+      await Promise.all(
+        followingIds.map(async (id) => {
+          const followingUser = await db.getUserById({
+            handle: store.handle,
+            id,
+          });
+          if (followingUser === null) {
+            return null;
+          }
+
+          const { followingIds, ...restOfUser } = followingUser;
+          return restOfUser;
+        })
+      )
+    ).filter((followingUser) => followingUser !== null);
+
+    const json = {
+      ...restOfUser,
+      following: followingUsers,
+    };
+
+    res.json(json);
   },
 
   "PATCH /users/:id": async (

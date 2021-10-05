@@ -17,9 +17,28 @@ describe("routes", () => {
         res as unknown as express.Response
       );
 
-      expect(res.json).toHaveBeenCalledWith(
-        await db.getUsers({ handle: routes_forTests.store.handle })
-      );
+      expect(res.json).toHaveBeenCalledWith([
+        {
+          username: "jimmy_neutron",
+          id: "jimmy",
+          viewCount: 210,
+        },
+        {
+          username: "hugh_neutron",
+          id: "hugh",
+          viewCount: 10,
+        },
+        {
+          username: "judy_neutron",
+          id: "judy",
+          viewCount: 10,
+        },
+        {
+          username: "carl_wheezer",
+          id: "carl",
+          viewCount: 0,
+        },
+      ]);
     });
   });
 
@@ -40,12 +59,18 @@ describe("routes", () => {
         res as unknown as express.Response
       );
 
-      expect(res.json).toHaveBeenCalledWith(
-        await db.getUserById({
-          handle: routes_forTests.store.handle,
-          id: req.params.id,
-        })
-      );
+      expect(res.json).toHaveBeenCalledWith({
+        username: "carl_wheezer",
+        id: "carl",
+        viewCount: 0,
+        following: [
+          {
+            username: "jimmy_neutron",
+            id: "jimmy",
+            viewCount: 210,
+          },
+        ],
+      });
       expect(res.sendStatus).not.toHaveBeenCalled();
     });
 
