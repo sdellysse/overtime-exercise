@@ -1,4 +1,4 @@
-import * as db from "../../src/db";
+import * as db from "./db";
 
 describe("db", () => {
   describe("getInitialHandler", () => {

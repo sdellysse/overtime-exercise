@@ -13,6 +13,7 @@ const routes = <const>{
   ): Promise<void> => {
     const users = await db.getUsers({ handle: store.handle });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     res.json(users.map(({ followingIds, ...restOfUser }) => restOfUser));
   },
 
@@ -41,6 +42,7 @@ const routes = <const>{
             return null;
           }
 
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { followingIds, ...restOfUser } = followingUser;
           return restOfUser;
         })

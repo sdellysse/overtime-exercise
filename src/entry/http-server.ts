@@ -1,7 +1,7 @@
 import bodyParser from "body-parser";
 import createExpress from "express";
 import createRouter from "express-promise-router";
-import routes from "../src/routes";
+import routes from "../lib/routes";
 
 const router = createRouter();
 router.get("/users", routes["GET /users"]);

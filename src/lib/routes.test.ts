@@ -1,6 +1,6 @@
-import routes, { _forTests as routes_forTests } from "../../src/routes";
-import * as db from "../../src/db";
 import express from "express";
+import * as db from "./db";
+import routes, { _forTests as routes_forTests } from "./routes";
 
 describe("routes", () => {
   beforeEach(() => (routes_forTests.store.handle = db.getInitialHandle()));
