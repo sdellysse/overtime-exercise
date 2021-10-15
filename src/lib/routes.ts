@@ -119,9 +119,11 @@ const routes = <const>{
 
     switch (body.action) {
       case "follow": {
+        const otherUserId = body.user_id;
+
         const otherUser = await db.getUserById({
           handle: store.handle,
-          id: body.user_id,
+          id: otherUserId,
         });
         if (otherUser === null) {
           res.sendStatus(406);
@@ -144,6 +146,7 @@ const routes = <const>{
       }
       case "unfollow": {
         const otherUserId = body.user_id;
+
         if (user.followingIds.find((id) => id === otherUserId) === undefined) {
           res.sendStatus(406);
           return;
@@ -175,7 +178,9 @@ const routes = <const>{
       default: {
         const exhaustiveCheck: never = body;
         throw new Error(
-          `typescript should never let us get here: ${exhaustiveCheck}`
+          `typescript should never let us get here: ${JSON.stringify(
+            exhaustiveCheck
+          )}`
         );
       }
     }
