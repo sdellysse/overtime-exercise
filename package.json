@@ -12,46 +12,6 @@
     "test:eslint": "eslint src",
     "test:jest": "jest"
   },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "node": "current"
-          }
-        }
-      ],
-      "@babel/preset-typescript"
-    ]
-  },
-  "prettier": {
-    "jsonRecursiveSort": true
-  },
-  "eslintConfig": {
-    "env": {
-      "es2021": true,
-      "node": true
-    },
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 12,
-      "sourceType": "module"
-    },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "extends": [
-      "eslint:recommended",
-      "plugin:@typescript-eslint/recommended",
-      "prettier"
-    ],
-    "rules": {}
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node"
-  },
   "dependencies": {
     "body-parser": "1.19.0",
     "express": "4.17.1",
