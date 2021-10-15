@@ -101,6 +101,9 @@ describe("routes", () => {
         params: {
           id: "sheen",
         },
+        body: {
+          action: "view",
+        },
       };
       const res = {
         sendStatus: jest.fn(),

@@ -1,4 +1,5 @@
 import * as express from "express";
+import * as rt from "runtypes";
 import * as db from "./db";
 
 // export for testing
@@ -21,9 +22,21 @@ const routes = <const>{
     req: express.Request,
     res: express.Response
   ): Promise<void> => {
+    const Params = rt.Record({
+      id: rt.String,
+    });
+
+    let params: rt.Static<typeof Params>;
+    try {
+      params = Params.check(req.params);
+    } catch (error) {
+      res.sendStatus(400);
+      return;
+    }
+
     const user = await db.getUserById({
       handle: store.handle,
-      id: req.params.id,
+      id: params.id,
     });
     if (user === null) {
       res.sendStatus(404);
@@ -61,76 +74,111 @@ const routes = <const>{
     req: express.Request,
     res: express.Response
   ): Promise<void> => {
+    const ParamsSchema = rt.Record({
+      id: rt.String,
+    });
+
+    let params: rt.Static<typeof ParamsSchema>;
+    try {
+      params = ParamsSchema.check(req.params);
+    } catch (error) {
+      res.sendStatus(400);
+      return;
+    }
+
+    const BodySchema = rt.Union(
+      rt.Record({
+        action: rt.Literal("follow"),
+        user_id: rt.String,
+      }),
+      rt.Record({
+        action: rt.Literal("unfollow"),
+        user_id: rt.String,
+      }),
+      rt.Record({
+        action: rt.Literal("view"),
+      })
+    );
+
+    let body: rt.Static<typeof BodySchema>;
+    try {
+      body = BodySchema.check(req.body);
+    } catch (error) {
+      res.sendStatus(400);
+      return;
+    }
+
     const user = await db.getUserById({
       handle: store.handle,
-      id: req.params.id,
+      id: params.id,
     });
     if (user === null) {
       res.sendStatus(404);
       return;
     }
 
-    if (req.body.action === "view") {
-      store.handle = await db.setUser({
-        handle: store.handle,
-        user: {
-          ...user,
-          viewCount: user.viewCount + 1,
-        },
-      });
+    switch (body.action) {
+      case "follow": {
+        const otherUser = await db.getUserById({
+          handle: store.handle,
+          id: body.user_id,
+        });
+        if (otherUser === null) {
+          res.sendStatus(406);
+          return;
+        }
 
-      res.sendStatus(200);
-      return;
-    }
+        store.handle = await db.setUser({
+          handle: store.handle,
+          user: {
+            ...user,
+            followingIds: [
+              ...user.followingIds.filter((id) => id !== otherUser.id),
+              otherUser.id,
+            ],
+          },
+        });
 
-    if (req.body.action === "follow") {
-      const otherUser = await db.getUserById({
-        handle: store.handle,
-        id: req.body.user_id,
-      });
-      if (otherUser === null) {
-        res.sendStatus(406);
+        res.sendStatus(200);
         return;
       }
+      case "unfollow": {
+        const otherUserId = body.user_id;
+        if (user.followingIds.find((id) => id === otherUserId) === undefined) {
+          res.sendStatus(406);
+          return;
+        }
 
-      store.handle = await db.setUser({
-        handle: store.handle,
-        user: {
-          ...user,
-          followingIds: [
-            ...user.followingIds.filter((id) => id !== otherUser.id),
-            otherUser.id,
-          ],
-        },
-      });
+        store.handle = await db.setUser({
+          handle: store.handle,
+          user: {
+            ...user,
+            followingIds: user.followingIds.filter((id) => id !== otherUserId),
+          },
+        });
 
-      res.sendStatus(200);
-      return;
-    }
-
-    if (req.body.action === "unfollow") {
-      if (
-        user.followingIds.find((id) => id === req.body.user_id) === undefined
-      ) {
-        res.sendStatus(406);
+        res.sendStatus(200);
         return;
       }
+      case "view": {
+        store.handle = await db.setUser({
+          handle: store.handle,
+          user: {
+            ...user,
+            viewCount: user.viewCount + 1,
+          },
+        });
 
-      store.handle = await db.setUser({
-        handle: store.handle,
-        user: {
-          ...user,
-          followingIds: user.followingIds.filter(
-            (id) => id !== req.body.user_id
-          ),
-        },
-      });
-
-      res.sendStatus(200);
-      return;
+        res.sendStatus(200);
+        return;
+      }
+      default: {
+        const exhaustiveCheck: never = body;
+        throw new Error(
+          `typescript should never let us get here: ${exhaustiveCheck}`
+        );
+      }
     }
-
-    res.sendStatus(400);
   },
 };
 
